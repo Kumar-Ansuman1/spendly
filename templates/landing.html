@@ -16,7 +16,7 @@
         </p>
         <div class="hero-actions">
             <a href="{{ url_for('register') }}" class="btn-primary">Create free account</a>
-            <a href="{{ url_for('login') }}" class="btn-primary btn-secondary">See how it works</a>
+            <button class="btn-primary btn-secondary" id="openVideoModal">See how it works</button>
         </div>
         <div class="hero-visual">
             <div class="mock-card">
@@ -86,5 +86,55 @@
         <a href="{{ url_for('register') }}" class="btn-primary">Create free account</a>
     </div>
 </section>
+
+<!-- Video Modal -->
+<div class="video-modal" id="videoModal">
+    <div class="video-modal-overlay" id="modalOverlay"></div>
+    <div class="video-modal-content">
+        <button class="video-modal-close" id="closeModal">&times;</button>
+        <div class="video-wrapper">
+            <iframe
+                id="youtubeIframe"
+                src=""
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        var openBtn = document.getElementById('openVideoModal');
+        var closeBtn = document.getElementById('closeModal');
+        var overlay = document.getElementById('modalOverlay');
+        var modal = document.getElementById('videoModal');
+        var iframe = document.getElementById('youtubeIframe');
+        var videoUrl = 'https://www.youtube.com/embed/-Lt-ntUDj-g?enablejsapi=1';
+
+        function openModal() {
+            iframe.src = videoUrl;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            iframe.src = '';
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        openBtn.addEventListener('click', openModal);
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', closeModal);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.style.display === 'flex') {
+                closeModal();
+            }
+        });
+    })();
+</script>
 
 {% endblock %}
