@@ -1,0 +1,6 @@
+{
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": false,
+    "github@claude-plugins-official": false
+  }
+}
