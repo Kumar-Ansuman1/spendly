@@ -1,0 +1,1 @@
+- [04-profile-page](.claude/specs/04-profile-page.md) — Step 4: Implement profile page with user info and expense summary
