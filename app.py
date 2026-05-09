@@ -90,6 +90,7 @@ def login():
 
         if user and check_password_hash(user["password_hash"], password):
             session["user_id"] = user["id"]
+            session["user_name"] = user["name"]
             return redirect(url_for("profile"))
 
         return render_template("login.html", error="Invalid email or password")
@@ -118,8 +119,39 @@ def logout():
 
 
 @app.route("/profile")
+@login_required
 def profile():
-    return "Profile page — coming in Step 4"
+    user = {
+        "name": session.get("user_name", "User"),
+        "email": "demo@spendly.com",
+        "member_since": "April 2026"
+    }
+
+    stats = {
+        "total_spent": 565.50,
+        "transaction_count": 8,
+        "top_category": "Shopping"
+    }
+
+    transactions = [
+        {"date": "May 15", "description": "New clothes", "category": "Shopping", "amount": 150.00},
+        {"date": "May 12", "description": "Dinner out", "category": "Food", "amount": 35.00},
+        {"date": "May 10", "description": "Miscellaneous", "category": "Other", "amount": 50.00},
+        {"date": "May 8", "description": "Movie tickets", "category": "Entertainment", "amount": 60.00},
+        {"date": "May 5", "description": "Pharmacy", "category": "Health", "amount": 80.00},
+    ]
+
+    categories = [
+        {"name": "Food", "amount": 60.50, "percentage": 11},
+        {"name": "Transport", "amount": 45.00, "percentage": 8},
+        {"name": "Bills", "amount": 120.00, "percentage": 21},
+        {"name": "Health", "amount": 80.00, "percentage": 14},
+        {"name": "Entertainment", "amount": 60.00, "percentage": 11},
+        {"name": "Shopping", "amount": 150.00, "percentage": 27},
+        {"name": "Other", "amount": 50.00, "percentage": 9},
+    ]
+
+    return render_template("profile.html", user=user, stats=stats, transactions=transactions, categories=categories)
 
 
 @app.route("/expenses/add")
