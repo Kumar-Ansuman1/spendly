@@ -121,35 +121,16 @@ def logout():
 @app.route("/profile")
 @login_required
 def profile():
-    user = {
-        "name": session.get("user_name", "User"),
-        "email": "demo@spendly.com",
-        "member_since": "April 2026"
-    }
+    from database.queries import get_user_by_id, get_summary_stats, get_recent_transactions, get_category_breakdown
 
-    stats = {
-        "total_spent": 565.50,
-        "transaction_count": 8,
-        "top_category": "Shopping"
-    }
+    user_id = session["user_id"]
+    user = get_user_by_id(user_id)
+    if not user:
+        return redirect(url_for("login"))
 
-    transactions = [
-        {"date": "May 15", "description": "New clothes", "category": "Shopping", "amount": 150.00},
-        {"date": "May 12", "description": "Dinner out", "category": "Food", "amount": 35.00},
-        {"date": "May 10", "description": "Miscellaneous", "category": "Other", "amount": 50.00},
-        {"date": "May 8", "description": "Movie tickets", "category": "Entertainment", "amount": 60.00},
-        {"date": "May 5", "description": "Pharmacy", "category": "Health", "amount": 80.00},
-    ]
-
-    categories = [
-        {"name": "Food", "amount": 60.50, "percentage": 11},
-        {"name": "Transport", "amount": 45.00, "percentage": 8},
-        {"name": "Bills", "amount": 120.00, "percentage": 21},
-        {"name": "Health", "amount": 80.00, "percentage": 14},
-        {"name": "Entertainment", "amount": 60.00, "percentage": 11},
-        {"name": "Shopping", "amount": 150.00, "percentage": 27},
-        {"name": "Other", "amount": 50.00, "percentage": 9},
-    ]
+    stats = get_summary_stats(user_id)
+    transactions = get_recent_transactions(user_id, limit=10)
+    categories = get_category_breakdown(user_id)
 
     return render_template("profile.html", user=user, stats=stats, transactions=transactions, categories=categories)
 
