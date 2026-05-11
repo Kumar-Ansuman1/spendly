@@ -30,8 +30,18 @@ def get_all_expenses(user_id):
     return expenses
 
 
-def get_summary_stats(user_id):
-    expenses = get_all_expenses(user_id)
+def get_summary_stats(user_id, start_date=None, end_date=None):
+    conn = get_db()
+    cursor = conn.cursor()
+    query = "SELECT * FROM expenses WHERE user_id = ?"
+    params = [user_id]
+    if start_date and end_date:
+        query += " AND date BETWEEN ? AND ?"
+        params.extend([start_date, end_date])
+    query += " ORDER BY date DESC"
+    cursor.execute(query, params)
+    expenses = cursor.fetchall()
+    conn.close()
     if not expenses:
         return {"total_spent": 0, "transaction_count": 0, "top_category": "—"}
 
@@ -52,10 +62,21 @@ def get_summary_stats(user_id):
     }
 
 
-def get_recent_transactions(user_id, limit=10):
-    expenses = get_all_expenses(user_id)
+def get_recent_transactions(user_id, limit=10, start_date=None, end_date=None):
+    conn = get_db()
+    cursor = conn.cursor()
+    query = "SELECT * FROM expenses WHERE user_id = ?"
+    params = [user_id]
+    if start_date and end_date:
+        query += " AND date BETWEEN ? AND ?"
+        params.extend([start_date, end_date])
+    query += " ORDER BY date DESC LIMIT ?"
+    params.append(limit)
+    cursor.execute(query, params)
+    expenses = cursor.fetchall()
+    conn.close()
     transactions = []
-    for e in expenses[:limit]:
+    for e in expenses:
         date_obj = datetime.strptime(e["date"], "%Y-%m-%d")
         formatted_date = date_obj.strftime("%b %d").replace(" 0", " ")
         transactions.append({
@@ -67,8 +88,18 @@ def get_recent_transactions(user_id, limit=10):
     return transactions
 
 
-def get_category_breakdown(user_id):
-    expenses = get_all_expenses(user_id)
+def get_category_breakdown(user_id, start_date=None, end_date=None):
+    conn = get_db()
+    cursor = conn.cursor()
+    query = "SELECT * FROM expenses WHERE user_id = ?"
+    params = [user_id]
+    if start_date and end_date:
+        query += " AND date BETWEEN ? AND ?"
+        params.extend([start_date, end_date])
+    query += " ORDER BY date DESC"
+    cursor.execute(query, params)
+    expenses = cursor.fetchall()
+    conn.close()
     if not expenses:
         return []
 

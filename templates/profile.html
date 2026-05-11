@@ -6,6 +6,30 @@
 
 <section class="profile-section">
     <div class="profile-container">
+        <!-- Date Filter -->
+        <div class="profile-card">
+            <h2 class="section-title">Filter by date</h2>
+            <form id="date-filter-form" method="GET" action="{{ url_for('profile') }}">
+                <div class="date-filter-presets">
+                    <button type="button" class="preset-btn" data-preset="all">All</button>
+                    <button type="button" class="preset-btn" data-preset="last7">Last 7 days</button>
+                    <button type="button" class="preset-btn" data-preset="last30">Last 30 days</button>
+                    <button type="button" class="preset-btn" data-preset="thismonth">This month</button>
+                    <button type="button" class="preset-btn" data-preset="lastmonth">Last month</button>
+                </div>
+                <div class="date-filter-custom">
+                    <label for="start_date">From:</label>
+                    <input type="date" id="start_date" name="start_date" value="{{ start_date if start_date else '' }}">
+                    <label for="end_date">To:</label>
+                    <input type="date" id="end_date" name="end_date" value="{{ end_date if end_date else '' }}">
+                    <button type="submit">Apply</button>
+                </div>
+                {% if start_date or end_date %}
+                <a href="{{ url_for('profile') }}" class="clear-filter">Clear filter</a>
+                {% endif %}
+            </form>
+        </div>
+
         <!-- User Info Card -->
         <div class="profile-card">
             <div class="profile-header">
@@ -81,4 +105,68 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('date-filter-form');
+    const presetButtons = form.querySelectorAll('.preset-btn');
+    const startDateInput = form.querySelector('#start_date');
+    const endDateInput = form.querySelector('#end_date');
+
+    // Function to format date as YYYY-MM-DD
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    // Function to calculate dates based on preset
+    function calculateDates(preset) {
+        const today = new Date();
+        let startDate, endDate;
+
+        switch (preset) {
+            case 'last7':
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - 6); // Last 7 days including today
+                endDate = today;
+                break;
+            case 'last30':
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - 29); // Last 30 days including today
+                endDate = today;
+                break;
+            case 'thismonth':
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = today;
+                break;
+            case 'lastmonth':
+                const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+                startDate = lastMonth;
+                endDate = lastMonthEnd;
+                break;
+            case 'all':
+            default:
+                startDateInput.value = '';
+                endDateInput.value = '';
+                form.submit();
+                return;
+        }
+
+        startDateInput.value = formatDate(startDate);
+        endDateInput.value = formatDate(endDate);
+        form.submit();
+    }
+
+    // Event listeners for preset buttons
+    presetButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const preset = this.getAttribute('data-preset');
+            calculateDates(preset);
+        });
+    });
+});
+</script>
 {% endblock %}

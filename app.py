@@ -128,11 +128,20 @@ def profile():
     if not user:
         return redirect(url_for("login"))
 
-    stats = get_summary_stats(user_id)
-    transactions = get_recent_transactions(user_id, limit=10)
-    categories = get_category_breakdown(user_id)
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
 
-    return render_template("profile.html", user=user, stats=stats, transactions=transactions, categories=categories)
+    # Validate date range: if both dates are provided and start_date > end_date, swap them
+    if start_date and end_date and start_date > end_date:
+        start_date, end_date = end_date, start_date
+        # Redirect to the same page with the swapped dates in the query string
+        return redirect(url_for("profile", start_date=start_date, end_date=end_date))
+
+    stats = get_summary_stats(user_id, start_date, end_date)
+    transactions = get_recent_transactions(user_id, limit=10, start_date=start_date, end_date=end_date)
+    categories = get_category_breakdown(user_id, start_date=start_date, end_date=end_date)
+
+    return render_template("profile.html", user=user, stats=stats, transactions=transactions, categories=categories, start_date=start_date, end_date=end_date)
 
 
 @app.route("/expenses/add")
