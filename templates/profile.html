@@ -8,7 +8,7 @@
     <div class="profile-container">
         <!-- Date Filter -->
         <div class="profile-card">
-            <h2 class="section-title">Filter by date</h2>
+            <h2 class="section-title sr-only">Filter by date</h2>
             <form id="date-filter-form" method="GET" action="{{ url_for('profile') }}">
                 <div class="date-filter-presets">
                     <button type="button" class="preset-btn" data-preset="all">All</button>
@@ -18,11 +18,9 @@
                     <button type="button" class="preset-btn" data-preset="lastmonth">Last month</button>
                 </div>
                 <div class="date-filter-custom">
-                    <label for="start_date">From:</label>
-                    <input type="date" id="start_date" name="start_date" value="{{ start_date if start_date else '' }}">
-                    <label for="end_date">To:</label>
-                    <input type="date" id="end_date" name="end_date" value="{{ end_date if end_date else '' }}">
-                    <button type="submit">Apply</button>
+                    <input type="date" id="start_date" name="start_date" placeholder="Start Date" aria-label="Start date" value="{{ start_date if start_date else '' }}">
+                    <input type="date" id="end_date" name="end_date" placeholder="End Date" aria-label="End date" value="{{ end_date if end_date else '' }}">
+                    <button type="submit" class="refine-btn">Refine</button>
                 </div>
                 {% if start_date or end_date %}
                 <a href="{{ url_for('profile') }}" class="clear-filter">Clear filter</a>
@@ -163,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listeners for preset buttons
     presetButtons.forEach(button => {
         button.addEventListener('click', function() {
+            presetButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
             const preset = this.getAttribute('data-preset');
             calculateDates(preset);
         });

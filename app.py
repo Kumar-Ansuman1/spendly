@@ -122,14 +122,25 @@ def logout():
 @login_required
 def profile():
     from database.queries import get_user_by_id, get_summary_stats, get_recent_transactions, get_category_breakdown
+    from datetime import datetime
 
     user_id = session["user_id"]
     user = get_user_by_id(user_id)
     if not user:
         return redirect(url_for("login"))
 
-    start_date = request.args.get("start_date")
-    end_date = request.args.get("end_date")
+    def validate_date(val):
+        """Validate YYYY-MM-DD format, return the value or None."""
+        if not val:
+            return None
+        try:
+            datetime.strptime(val, "%Y-%m-%d")
+            return val
+        except (ValueError, TypeError):
+            return None
+
+    start_date = validate_date(request.args.get("start_date"))
+    end_date = validate_date(request.args.get("end_date"))
 
     # Validate date range: if both dates are provided and start_date > end_date, swap them
     if start_date and end_date and start_date > end_date:
