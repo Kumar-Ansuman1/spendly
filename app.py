@@ -122,17 +122,37 @@ def logout():
 @login_required
 def profile():
     from database.queries import get_user_by_id, get_summary_stats, get_recent_transactions, get_category_breakdown
+    from datetime import datetime
 
     user_id = session["user_id"]
     user = get_user_by_id(user_id)
     if not user:
         return redirect(url_for("login"))
 
-    stats = get_summary_stats(user_id)
-    transactions = get_recent_transactions(user_id, limit=10)
-    categories = get_category_breakdown(user_id)
+    def validate_date(val):
+        """Validate YYYY-MM-DD format, return the value or None."""
+        if not val:
+            return None
+        try:
+            datetime.strptime(val, "%Y-%m-%d")
+            return val
+        except (ValueError, TypeError):
+            return None
 
-    return render_template("profile.html", user=user, stats=stats, transactions=transactions, categories=categories)
+    start_date = validate_date(request.args.get("start_date"))
+    end_date = validate_date(request.args.get("end_date"))
+
+    # Validate date range: if both dates are provided and start_date > end_date, swap them
+    if start_date and end_date and start_date > end_date:
+        start_date, end_date = end_date, start_date
+        # Redirect to the same page with the swapped dates in the query string
+        return redirect(url_for("profile", start_date=start_date, end_date=end_date))
+
+    stats = get_summary_stats(user_id, start_date, end_date)
+    transactions = get_recent_transactions(user_id, limit=10, start_date=start_date, end_date=end_date)
+    categories = get_category_breakdown(user_id, start_date=start_date, end_date=end_date)
+
+    return render_template("profile.html", user=user, stats=stats, transactions=transactions, categories=categories, start_date=start_date, end_date=end_date)
 
 
 @app.route("/expenses/add")

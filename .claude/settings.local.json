@@ -1,11 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Skill(test-feature)"
+    ]
+  },
   "enabledPlugins": {
     "superpowers@claude-plugins-official": false,
     "github@claude-plugins-official": false
-  },
-  "permissions": {
-    "allow": [
-      "Bash(python *)"
-    ]
   }
 }

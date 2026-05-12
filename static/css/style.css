@@ -711,6 +711,148 @@ a { color: inherit; text-decoration: none; }
 /* Footer                                                              */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Accessibility utility                                              */
+/* ------------------------------------------------------------------ */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Date Filter                                                        */
+/* ------------------------------------------------------------------ */
+
+.date-filter-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.preset-btn {
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.preset-btn:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+}
+
+.preset-btn.active {
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
+}
+
+.date-filter-custom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.date-filter-custom input[type="date"] {
+    flex: 1 1 150px;
+    min-width: 120px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--ink);
+    background: var(--paper);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.date-filter-custom input[type="date"]::-webkit-calendar-picker-indicator {
+    background: var(--accent-light);
+    border-radius: 3px;
+    padding: 2px;
+    cursor: pointer;
+}
+
+.date-filter-custom input[type="date"]:focus {
+    border-color: var(--accent);
+}
+
+.date-filter-custom .refine-btn {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.date-filter-custom .refine-btn:hover {
+    background: var(--accent);
+}
+
+.clear-filter {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: inline-block;
+}
+
+.clear-filter:hover {
+    color: var(--ink);
+    text-decoration: underline;
+}
+
+/* Responsive adjustments for date filter */
+@media (max-width: 600px) {
+    .date-filter-presets {
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .date-filter-custom {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .date-filter-custom input[type="date"] {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .date-filter-custom .refine-btn {
+        width: 100%;
+        padding: 0.6rem 1.2rem;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Footer                                                              */
+/* ------------------------------------------------------------------ */
+
 .footer {
     background: var(--ink);
     color: var(--paper);
