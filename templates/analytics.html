@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics — Spendly{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-badge">● Coming Soon</div>
+        <h1 class="hero-title">
+            Analytics Dashboard<br>
+            <em>Understand your spending patterns</em>
+        </h1>
+        <p class="hero-subtitle">
+            Get deep insights into your expenses with interactive charts, trend analysis, and predictive budgeting tools.
+        </p>
+        <div class="hero-actions">
+            <button class="btn-primary btn-secondary" id="notifyMe">Notify Me When Available</button>
+        </div>
+        <div class="hero-visual">
+            <div class="mock-analytics-card">
+                <div class="mock-chart-container">
+                    <!-- Simplified chart representation -->
+                    <div class="mock-chart-bar" style="height: 60%; background: linear-gradient(to top, #4ade80, #10b981);"></div>
+                    <div class="mock-chart-bar" style="height: 35%; background: linear-gradient(to top, #fbbf24, #f59e0b);"></div>
+                    <div class="mock-chart-bar" style="height: 80%; background: linear-gradient(to top, #60a5fa, #3b82f6);"></div>
+                    <div class="mock-chart-bar" style="height: 45%; background: linear-gradient(to top, #f472b6, #db2777);"></div>
+                    <div class="mock-chart-bar" style="height: 55%; background: linear-gradient(to top, #a78bfa, #8b5cf6);"></div>
+                </div>
+                <div class="mock-chart-labels">
+                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="features-inner">
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3 class="feature-title">Interactive Charts</h3>
+            <p class="feature-body">Visualize your spending with beautiful, interactive charts that reveal trends and patterns.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3 class="feature-title">Budget Forecasting</h3>
+            <p class="feature-body">Get AI-powered predictions for future spending based on your historical data.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💡</div>
+            <h3 class="feature-title">Smart Insights</h3>
+            <p class="feature-body">Discover actionable recommendations to optimize your spending and save more.</p>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="cta-inner">
+        <h2 class="cta-title">Stay updated</h2>
+        <p class="cta-body">Be the first to know when our analytics dashboard launches.</p>
+        <form id="notifyForm" class="notify-form">
+            <input type="email" id="emailInput" placeholder="Enter your email" required>
+            <button type="submit" class="btn-primary">Notify Me</button>
+        </form>
+        <p id="notifySuccess" class="notify-success" style="display: none; margin-top: 1rem;">Thanks! We'll notify you when analytics is ready.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const notifyForm = document.getElementById('notifyForm');
+        const notifySuccess = document.getElementById('notifySuccess');
+        const emailInput = document.getElementById('emailInput');
+        const notifyBtn = document.getElementById('notifyMe');
+
+        // Handle notify button in hero section
+        if (notifyBtn) {
+            notifyBtn.addEventListener('click', function() {
+                emailInput.scrollIntoView({ behavior: 'smooth' });
+                emailInput.focus();
+            });
+        }
+
+        // Handle form submission
+        if (notifyForm) {
+            notifyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = emailInput.value.trim();
+
+                if (email) {
+                    // In a real app, you'd send this to a backend service
+                    // For now, just show success message
+                    notifyForm.style.display = 'none';
+                    notifySuccess.style.display = 'block';
+
+                    // Reset form after a moment
+                    setTimeout(() => {
+                        notifyForm.reset();
+                        notifyForm.style.display = 'block';
+                        notifySuccess.style.display = 'none';
+                    }, 3000);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
