@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(python *)",
-      "Skill(test-feature)"
+      "Skill(test-feature)",
+      "mcp__sqlite__list_tables",
+      "mcp__sqlite__describe_table"
     ]
   },
   "enabledPlugins": {
