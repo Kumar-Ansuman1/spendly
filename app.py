@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database.db import init_db, seed_db, get_db
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from functools import wraps
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "dev-key-change-in-production"
@@ -161,9 +162,77 @@ def profile():
     return render_template("profile.html", user=user, stats=stats, transactions=transactions, categories=categories, start_date=start_date, end_date=end_date)
 
 
-@app.route("/expenses/add")
+def today_str():
+    return datetime.now().strftime("%Y-%m-%d")
+
+
+@app.route("/expenses/add", methods=["GET", "POST"])
+@login_required
 def add_expense():
-    return "Add expense — coming in Step 7"
+    if request.method == "POST":
+        # Get form data
+        amount_str = request.form.get("amount", "").strip()
+        category = request.form.get("category", "").strip()
+        date = request.form.get("date", "").strip()
+        description = request.form.get("description", "").strip()
+
+        # Validation
+        error = None
+
+        # Validate amount
+        if not amount_str:
+            error = "Amount is required"
+        else:
+            try:
+                amount = float(amount_str)
+                if amount <= 0:
+                    error = "Amount must be greater than zero"
+            except ValueError:
+                error = "Amount must be a valid number"
+
+        # Validate category
+        if not error and not category:
+            error = "Category is required"
+
+        # Validate date
+        if not error:
+            if not date:
+                error = "Date is required"
+            else:
+                try:
+                    datetime.strptime(date, "%Y-%m-%d")
+                except ValueError:
+                    error = "Date must be in YYYY-MM-DD format"
+
+        # If validation failed, show error and re-render form
+        if error:
+            flash(error, "error")
+            return render_template("expenses/add.html",
+                                 today=today_str(),
+                                 amount=amount_str,
+                                 category=category,
+                                 date=date,
+                                 description=description)
+
+        # If validation passed, insert expense into database
+        conn = get_db()
+        try:
+            conn.execute(
+                "INSERT INTO expenses (user_id, amount, category, date, description) VALUES (?, ?, ?, ?, ?)",
+                (session["user_id"], amount, category, date, description)
+            )
+            conn.commit()
+            flash("Expense added successfully!", "success")
+        except Exception as e:
+            flash("Something went wrong. Please try again.", "error")
+            app.logger.error(f"Expense add failed: {e}")
+        finally:
+            conn.close()
+
+        return redirect(url_for("profile"))
+
+    # GET request — show the form
+    return render_template("expenses/add.html", today=today_str())
 
 
 @app.route("/expenses/<int:id>/edit")
