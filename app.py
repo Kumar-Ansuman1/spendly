@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database.db import init_db, seed_db, get_db
+from database.queries import get_expense_by_id
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from functools import wraps
@@ -235,9 +236,71 @@ def add_expense():
     return render_template("expenses/add.html", today=today_str())
 
 
-@app.route("/expenses/<int:id>/edit")
+@app.route("/expenses/<int:id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_expense(id):
-    return "Edit expense — coming in Step 8"
+    user_id = session["user_id"]
+    expense = get_expense_by_id(user_id, id)
+    if not expense:
+        flash("Expense not found", "error")
+        return redirect(url_for("profile"))
+
+    if request.method == "POST":
+        amount_str = request.form.get("amount", "").strip()
+        category = request.form.get("category", "").strip()
+        date = request.form.get("date", "").strip()
+        description = request.form.get("description", "").strip()
+
+        error = None
+
+        if not amount_str:
+            error = "Amount is required"
+        else:
+            try:
+                amount = float(amount_str)
+                if amount <= 0:
+                    error = "Amount must be greater than zero"
+            except ValueError:
+                error = "Amount must be a valid number"
+
+        if not error and not category:
+            error = "Category is required"
+
+        if not error:
+            if not date:
+                error = "Date is required"
+            else:
+                try:
+                    datetime.strptime(date, "%Y-%m-%d")
+                except ValueError:
+                    error = "Date must be in YYYY-MM-DD format"
+
+        if error:
+            flash(error, "error")
+            return render_template("expenses/edit.html",
+                                   expense=expense,
+                                   amount=amount_str,
+                                   category=category,
+                                   date=date,
+                                   description=description)
+
+        conn = get_db()
+        try:
+            conn.execute(
+                "UPDATE expenses SET amount = ?, category = ?, date = ?, description = ? WHERE id = ? AND user_id = ?",
+                (amount, category, date, description, id, user_id)
+            )
+            conn.commit()
+            flash("Expense updated successfully!", "success")
+        except Exception as e:
+            flash("Something went wrong. Please try again.", "error")
+            app.logger.error(f"Expense edit failed: {e}")
+        finally:
+            conn.close()
+
+        return redirect(url_for("profile"))
+
+    return render_template("expenses/edit.html", expense=expense)
 
 
 @app.route("/expenses/<int:id>/delete")

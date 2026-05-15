@@ -80,12 +80,22 @@ def get_recent_transactions(user_id, limit=10, start_date=None, end_date=None):
         date_obj = datetime.strptime(e["date"], "%Y-%m-%d")
         formatted_date = date_obj.strftime("%b %d").replace(" 0", " ")
         transactions.append({
+            "id": e["id"],
             "date": formatted_date,
             "description": e["description"],
             "category": e["category"],
             "amount": e["amount"]
         })
     return transactions
+
+
+def get_expense_by_id(user_id, expense_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM expenses WHERE id = ? AND user_id = ?", (expense_id, user_id))
+    expense = cursor.fetchone()
+    conn.close()
+    return expense
 
 
 def get_category_breakdown(user_id, start_date=None, end_date=None):
